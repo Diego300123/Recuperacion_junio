@@ -1,3 +1,20 @@
+Pa que haiga lujo
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bullseye64"
+
+  config.vm.network "private_network", ip: "192.168.57.4"
+  config.vm.hostname = "www.example.test"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y nginx openssl apache2-utils
+  SHELL
+end
+
+
+
+
 # Guía de instalación y configuración de Nginx con SSL y autenticación básica
 
 Este documento describe paso a paso cómo instalar y configurar un servidor web Nginx en una máquina virtual Linux, incluyendo la configuración de HTTPS con un certificado autofirmado y autenticación básica en una ruta protegida.
