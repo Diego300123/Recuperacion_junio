@@ -55,6 +55,7 @@ end
 
 
 
+
 # Configuración de Servidor DNS con BIND9
 
 ## Índice
@@ -91,50 +92,53 @@ En el servidor (tanto en `dns1` como en `dns2`), instala BIND9:
 
 ```bash
 sudo apt update && sudo apt install bind9 bind9utils bind9-doc -y
-Configurar la Zona Directa e Inversa
-Zona Directa
-Abre el archivo de configuración de zonas:
+```
 
-bash
-Copiar
-Editar
+### Configurar la Zona Directa e Inversa
+
+#### Zona Directa
+
+1. Abre el archivo de configuración de zonas:
+
+```bash
 sudo nano /etc/bind/named.conf.local
-Añade la configuración de la zona directa:
+```
 
-bash
-Copiar
-Editar
+2. Añade la configuración de la zona directa:
+
+```bash
 zone "example.test" {
     type master;
     file "/etc/bind/db.example.test";
     allow-transfer { 192.168.57.3; };
 };
-Añade la configuración de la zona inversa:
+```
 
-bash
-Copiar
-Editar
+3. Añade la configuración de la zona inversa:
+
+```bash
 zone "57.168.192.in-addr.arpa" {
     type master;
     file "/etc/bind/db.192";
     allow-transfer { 192.168.57.3; };
 };
-Guarda y cierra el archivo (CTRL + O, Enter, CTRL + X).
+```
 
-Archivos de Zona
-Zona Directa: /etc/bind/db.example.test
+4. Guarda y cierra el archivo (`CTRL + O`, `Enter`, `CTRL + X`).
 
-Crea el archivo de zona directa con:
+#### Archivos de Zona
 
-bash
-Copiar
-Editar
+- **Zona Directa**: `/etc/bind/db.example.test`
+
+  Crea el archivo de zona directa con:
+
+```bash
 sudo cp /etc/bind/db.empty /etc/bind/db.example.test
+```
+
 Edita el archivo y agrega:
 
-bash
-Copiar
-Editar
+```bash
 $TTL    604800
 @       IN      SOA     dns1.example.test. admin.example.test. (
                               2         ; Serial
@@ -155,19 +159,19 @@ www     IN      CNAME   srv
 
 ; Registro MX
 @       IN      MX 10   srv
-Zona Inversa: /etc/bind/db.192
+```
 
-Crea el archivo de zona inversa con:
+- **Zona Inversa**: `/etc/bind/db.192`
 
-bash
-Copiar
-Editar
+  Crea el archivo de zona inversa con:
+
+```bash
 sudo cp /etc/bind/db.empty /etc/bind/db.192
+```
+
 Edita el archivo y agrega:
 
-bash
-Copiar
-Editar
+```bash
 $TTL    604800
 @       IN      SOA     dns1.example.test. admin.example.test. (
                               2         ; Serial
@@ -184,18 +188,19 @@ $TTL    604800
 2       IN      PTR     dns1.example.test.
 3       IN      PTR     dns2.example.test.
 4       IN      PTR     srv.example.test.
-Configurar un Reenviador
-Abre el archivo de configuración named.conf.options:
+```
 
-bash
-Copiar
-Editar
+### Configurar un Reenviador
+
+1. Abre el archivo de configuración `named.conf.options`:
+
+```bash
 sudo nano /etc/bind/named.conf.options
-Añade el reenviador a 8.8.8.8:
+```
 
-bash
-Copiar
-Editar
+2. Añade el reenviador a `8.8.8.8`:
+
+```bash
 options {
     forwarders {
         8.8.8.8;
@@ -203,31 +208,33 @@ options {
     recursion yes;
     allow-query { any; };
 };
-Reiniciar BIND9
+```
+
+### Reiniciar BIND9
+
 Para aplicar los cambios, reinicia el servicio BIND9:
 
-bash
-Copiar
-Editar
+```bash
 sudo systemctl restart bind9
+```
+
 Verifica que el servicio esté corriendo:
 
-bash
-Copiar
-Editar
+```bash
 sudo systemctl status bind9
-Configurar Servidor Secundario (dns2)
-En el servidor secundario (dns2), edita el archivo de zonas como slave:
+```
 
-bash
-Copiar
-Editar
+### Configurar Servidor Secundario (`dns2`)
+
+1. En el servidor secundario (`dns2`), edita el archivo de zonas como `slave`:
+
+```bash
 sudo nano /etc/bind/named.conf.local
-Añade las zonas como slave:
+```
 
-bash
-Copiar
-Editar
+Añade las zonas como `slave`:
+
+```bash
 zone "example.test" {
     type slave;
     masters { 192.168.57.2; };
@@ -239,58 +246,64 @@ zone "57.168.192.in-addr.arpa" {
     masters { 192.168.57.2; };
     file "/var/cache/bind/db.192";
 };
-Reinicia BIND9 en dns2:
+```
 
-bash
-Copiar
-Editar
+2. Reinicia BIND9 en `dns2`:
+
+```bash
 sudo systemctl restart bind9
-3. Pruebas con dig y nslookup
-Consultas Directas e Inversas
-dns1.example.test (Directa):
+```
 
-bash
-Copiar
-Editar
+## 3. Pruebas con `dig` y `nslookup`
+
+### Consultas Directas e Inversas
+
+- **dns1.example.test (Directa)**:
+
+```bash
 dig @192.168.57.2 dns1.example.test
-dns1.example.test (Inversa):
+```
 
-bash
-Copiar
-Editar
+- **dns1.example.test (Inversa)**:
+
+```bash
 dig @192.168.57.2 -x 192.168.57.2
-dns2.example.test (Directa):
+```
 
-bash
-Copiar
-Editar
+- **dns2.example.test (Directa)**:
+
+```bash
 dig @192.168.57.3 dns2.example.test
-dns2.example.test (Inversa):
+```
 
-bash
-Copiar
-Editar
+- **dns2.example.test (Inversa)**:
+
+```bash
 dig @192.168.57.3 -x 192.168.57.3
-Consultas de Alias y Correo
-www.example.test (Alias CNAME):
+```
 
-bash
-Copiar
-Editar
+### Consultas de Alias y Correo
+
+- **www.example.test (Alias CNAME)**:
+
+```bash
 dig @192.168.57.2 www.example.test
-Registro de Correo (MX):
+```
 
-bash
-Copiar
-Editar
+- **Registro de Correo (MX)**:
+
+```bash
 dig @192.168.57.2 example.test MX
-Comprobar Transferencia de Zona
-Desde dns2:
+```
 
-bash
-Copiar
-Editar
+### Comprobar Transferencia de Zona
+
+Desde `dns2`:
+
+```bash
 dig @192.168.57.2 example.test AXFR
+```
+
 ¡Eso es todo! Ahora tienes una configuración completa de un servidor DNS primario y secundario con BIND9. Puedes realizar las pruebas para verificar que todo está funcionando correctamente.
 
 yaml
