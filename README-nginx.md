@@ -267,3 +267,5 @@ sudo systemctl restart nginx
 
 ¡IMPORTANTE!
 Ruta para editar los hosts: C:\Windows\System32\drivers\etc\hosts
+Por ejemplo:
+  192.168.57.4   www.example.test
