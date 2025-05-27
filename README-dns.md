@@ -303,22 +303,3 @@ Desde `dns2`:
 ```bash
 dig @192.168.57.2 example.test AXFR
 ```
-
-¡Eso es todo! Ahora tienes una configuración completa de un servidor DNS primario y secundario con BIND9. Puedes realizar las pruebas para verificar que todo está funcionando correctamente.
-
-yaml
-Copiar
-Editar
-
----
-
-Este es el contenido de un archivo `README.md` que resume toda la configuración que hemos hecho. Puedes copiar este texto en un archivo `.md` y almacenarlo para futuras referencias.
-
-¿Te gustaría que te ayude a crear el archivo y compartirlo?
-
-
-
-
-
-
-
