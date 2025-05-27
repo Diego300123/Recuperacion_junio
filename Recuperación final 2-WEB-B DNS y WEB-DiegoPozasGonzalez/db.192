@@ -1,0 +1,16 @@
+$TTL    604800
+@       IN      SOA     dns.zaidin.test. admin.zaidin.test. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+
+; Servidores DNS
+@       IN      NS      dns.zaidin.test.
+
+; Registros PTR
+10      IN      PTR     dns.zaidin.test.
+20      IN      PTR     www.zaidin.test.
+30      IN      PTR     mail.zaidin.test.
+61      IN      PTR     client.zaidin.test.

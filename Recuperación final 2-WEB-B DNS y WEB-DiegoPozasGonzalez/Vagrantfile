@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bullseye64"
+  config.vm.box_check_update = false
+  config.ssh.insert_key = false
+  
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.memory = "256"
+  end
+
+  # Cliente para probar DNS (192.168.57.61)
+  config.vm.define "client" do |client|
+    # Instalar herramientas clientes de DNS
+    client.vm.provision "dns", type: "shell", inline: <<-SHELL
+      apt-get update && apt-get install -y bind9-utils
+    SHELL
+  end
+
+  # Servidor DNS
+  config.vm.define "dns" do |dns|
+    dns.vm.hostname = "dns"
+    dns.vm.network "private_network", ip: "192.168.57.61"
+
+    dns.vm.provision "bind9-install", type: "shell", inline: <<-SHELL
+        apt update
+        apt-get install -y bind9 bind9-utils bind9-doc
+    SHELL
+  end
+
+  # Servidor Web
+  config.vm.define "web" do |web|
+    web.vm.hostname = "www.zaidin.test"
+    web.vm.network "private_network", ip: "192.168.57.20"
+  end  
+end
